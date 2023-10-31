@@ -1,4 +1,11 @@
 #!/usr/bin/make -f
 
+export PYBUILD_DISABLE=test
+
 %:
-	dh $@
+	dh $@ --buildsystem=pybuild
+
+execute_before_dh_sphinxdoc:
+ifeq (,$(findstring nodocs, $(DEB_BUILD_OPTIONS)))
+	PYTHONPATH=. python3 -m sphinx -b html doc/source debian/python-git-doc/usr/share/doc/python-git-doc/html
+endif

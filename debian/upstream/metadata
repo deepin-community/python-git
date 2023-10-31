@@ -1,0 +1,9 @@
+Bug-Database: https://github.com/gitpython-developers/GitPython/issues
+Bug-Submit: https://github.com/gitpython-developers/GitPython/issues/new
+Repository: https://github.com/gitpython-developers/GitPython.git
+Repository-Browse: https://github.com/gitpython-developers/GitPython
+Registry:
+ - Name: conda:conda-forge
+   Entry: gitpython
+ - Name: guix
+   Entry: python-gitpython
