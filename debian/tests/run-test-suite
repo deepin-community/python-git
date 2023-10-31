@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# Test suite needs upstream git repo.
+# Modelled after .github/workflows/pythonpackage.yml
+
+set -ex
+
+cd "$AUTOPKGTEST_TMP"
+
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"
+git config --global protocol.file.allow always
+
+git clone https://github.com/gitpython-developers/GitPython.git
+cd GitPython
+git reset --hard "$(dpkg-query -W -f '${source:Upstream-Version}' python3-git)"
+git submodule update --init --recursive
+TRAVIS=yes ./init-tests-after-clone.sh
+
+# Make sure we test the package.
+rm -r git doc
+sed -i '/addopts/d' pyproject.toml
+
+for py in $(py3versions -s); do
+    $py -m pytest -k 'not test_with_rw_remote_and_rw_repo and not test_references_and_objects and not test_submodules and not test_installation and not test_base and not test_clone_from_with_path_contains_unicode and not test_submodule_update and not test_submodules and not test_add_clone_multi_options_argument and not test_add_no_clone_multi_options_argument and not test_base_rw and not test_branch_renames and not test_git_submodule_compatibility and not test_git_submodules_and_add_sm_with_new_commit and not test_list_only_valid_submodules and not test_remove_norefs and not test_rename and not test_root_module and not test_update_clone_multi_options_argument and not test_update_no_clone_multi_options_argument'
+done

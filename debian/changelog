@@ -1,5 +1,468 @@
-template-repository (1.0-1) unstable; urgency=medium
+python-git (3.1.37-1) unstable; urgency=medium
 
-  * Initial release
+  * Team upload.
+  * New upstream version 3.1.37
 
- -- Tsic404 <liuheng@deepin.org>  Sat, 28 Jan 2023 13:46:49 +0800
+ -- Hans-Christoph Steiner <hans@eds.org>  Fri, 29 Sep 2023 12:35:58 +0200
+
+python-git (3.1.36-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream version 3.1.36
+
+ -- Hans-Christoph Steiner <hans@eds.org>  Mon, 18 Sep 2023 22:09:04 +0200
+
+python-git (3.1.30-1) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * Team upload.
+  * Update standards version to 4.6.1, no changes needed.
+
+  [ Jochen Sprickerhof ]
+  * Switch d/watch to Github
+  * New upstream version 3.1.30 (Closes: #1027163)
+    - CVE-2022-24439: Remote Code Execution
+  * Minimize d/rules
+  * Update (build) dependencies (Closes: #1018503)
+  * Add autopkgtest
+  * Drop salsa-ci.yml
+  * Bump policy version (no changes)
+  * Move package description to source package
+  * Add R³
+
+ -- Jochen Sprickerhof <jspricke@debian.org>  Sat, 07 Jan 2023 15:36:58 +0100
+
+python-git (3.1.27-1) unstable; urgency=medium
+
+  * New upstream version 3.1.27
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Fri, 01 Apr 2022 22:47:57 +0900
+
+python-git (3.1.24-1) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * Remove constraints unnecessary since buster
+
+  [ TANIGUCHI Takaki ]
+  * New upstream version 3.1.24
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sun, 28 Nov 2021 21:59:09 +0900
+
+python-git (3.1.23-1) unstable; urgency=medium
+
+  [ Steffen Möller ]
+  * d/u/metadata: Added refs to registries
+  * d/control: Introduced the project name to the description
+
+  [ Debian Janitor ]
+  * Remove constraints unnecessary since buster
+
+  [ TANIGUCHI Takaki ]
+  * New upstream version 3.1.23
+  * Bump Standards-Version to 4.6.0
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sun, 12 Sep 2021 13:19:18 +0900
+
+python-git (3.1.14-1) unstable; urgency=medium
+
+  * New upstream version 3.1.14
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sun, 28 Feb 2021 17:39:53 +0900
+
+python-git (3.1.12-1) unstable; urgency=medium
+
+  * New upstream version 3.1.12
+  * Bump debian-compat to 13
+  * Bump Standards-Version to 4.5.1
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sun, 10 Jan 2021 12:09:50 +0900
+
+python-git (3.1.11-1) unstable; urgency=medium
+
+  * New upstream version 3.1.11
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sat, 07 Nov 2020 12:07:37 +0900
+
+python-git (3.1.9-1) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * d/control: Update Maintainer field with new Debian Python Team
+    contact address.
+  * d/control: Update Vcs-* fields with new Debian Python Team Salsa
+    layout.
+
+  [ TANIGUCHI Takaki ]
+  * New upstream version 3.1.9
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sat, 03 Oct 2020 18:38:33 +0900
+
+python-git (3.1.7-1) unstable; urgency=medium
+
+  * New upstream version 3.1.7
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sun, 26 Jul 2020 14:28:48 +0900
+
+python-git (3.1.3-1) unstable; urgency=medium
+
+  * New upstream version 3.1.3
+    - Fix "git breaks fdroidserver autopkgtest: Failed to parse line: '
+      git config pull.rebase false" (Closes: #961702)
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sun, 31 May 2020 12:52:14 +0900
+
+python-git (3.1.2-1) unstable; urgency=medium
+
+  * New upstream version 3.1.2
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sat, 30 May 2020 13:17:59 +0900
+
+python-git (3.1.1-1) unstable; urgency=medium
+
+  * New upstream version 3.1.1
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sat, 25 Apr 2020 13:07:25 +0900
+
+python-git (3.1.0-1) unstable; urgency=medium
+
+  * New upstream version 3.1.0
+  * d/rules: remove python2 code
+  * Bump Standards-Version to 4.5.0
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sun, 05 Apr 2020 13:33:25 +0900
+
+python-git (3.0.7-1) unstable; urgency=medium
+
+  * New upstream version 3.0.7
+  * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository,
+    Repository-Browse.
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Tue, 11 Feb 2020 11:45:30 +0900
+
+python-git (3.0.5-1) unstable; urgency=medium
+
+  * New upstream version 3.0.5
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Mon, 18 Nov 2019 17:44:13 +0900
+
+python-git (3.0.4-1) unstable; urgency=medium
+
+  * New upstream version 3.0.4
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Wed, 23 Oct 2019 18:57:23 +0900
+
+python-git (3.0.3-3) unstable; urgency=medium
+
+  * Add python-git to Breaks and Replaces to fix file conflict (Closes: #941756)
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Fri, 11 Oct 2019 11:52:29 +0900
+
+python-git (3.0.3-2) unstable; urgency=medium
+
+  * run dh_link only doc package (Closes: #941756)
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Mon, 07 Oct 2019 10:47:14 +0900
+
+python-git (3.0.3-1) unstable; urgency=medium
+
+  * New upstream version 3.0.3
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Fri, 04 Oct 2019 22:52:08 +0900
+
+python-git (3.0.1-1) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * Convert git repository from git-dpm to gbp layout
+  * Use 'python3 -m sphinx' instead of sphinx-build for building docs
+  * Use debhelper-compat instead of debian/compat.
+
+  [ TANIGUCHI Takaki ]
+  * New upstream version 3.0.1
+  * debian-compat: Bump to 12
+  * debian/rules:
+    - Use pybuild.
+    - Skip dh_auto_test (it works only in git repository)
+  * debian/control:
+    - Add python3-sphinx-rtd-theme to B-D.
+    - Add pytyon-ddt to B-D.
+    - Add python3-flakes to B-D
+  * Upstream drops support python2. (Closes: #937786)
+  * Add debian/salsa-ci.yml
+  * Set upstream metadata fields: Repository.
+  * Bump Standards-Version to 4.4.1
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Fri, 04 Oct 2019 12:53:41 +0900
+
+python-git (2.1.11-1) unstable; urgency=medium
+
+  * New upstream version 2.1.11
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Mon, 30 Jul 2018 11:45:18 +0900
+
+python-git (2.1.10-1) unstable; urgency=medium
+
+  * Bump Stanrads-Version to 4.1.5.
+  * New upstream version 2.1.10.
+  * debian/compat: 11
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Fri, 06 Jul 2018 17:40:17 +0900
+
+python-git (2.1.9-1) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * d/control: Set Vcs-* to salsa.debian.org
+  * d/copyright: Use https protocol in Format field
+  * d/watch: Use https protocol
+  * d/changelog: Remove trailing whitespaces
+
+  [ TANIGUCHI Takaki ]
+  * New upstream version 2.1.9
+  * debian/control: Change python-git-doc with Multi-arch: foreign.
+  * Bump Stanrads-Version to 4.1.4
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Tue, 08 May 2018 17:21:25 +0900
+
+python-git (2.1.8-1) unstable; urgency=medium
+
+  * New upstream version 2.1.8 (Closes: #880446)
+    - Fix "Incompatible with git 2.15?" (Closes: #879452)
+  * debian/control: Replace python3-sphinx instead of python2-sphinx
+  * delete debian/patches/0001-recognize-the-new-packed-ref-header-format.patch
+    Upstream merged
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sat, 20 Jan 2018 18:48:00 +0900
+
+python-git (2.1.7-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 06 Nov 2017 21:44:22 -0500
+
+python-git (2.1.6-1) unstable; urgency=medium
+
+  * New upstream release
+    - fixes for submodules with names consisting of numbers and bools
+    - worktree support
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Tue, 26 Sep 2017 09:13:09 -0400
+
+python-git (2.1.5-1) unstable; urgency=medium
+
+  * New upstream version 2.1.5
+  * Bump Standards-Verision to 4.0.0 (without changes).
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Tue, 27 Jun 2017 18:49:38 +0900
+
+python-git (2.1.3-1) experimental; urgency=medium
+
+  * Fresh bugfix upstream release
+    - upstreamed debian/patches/exe_exception.patch
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 05 Jun 2017 22:11:58 -0400
+
+python-git (2.1.1-2) unstable; urgency=medium
+
+  * debian/patches/exe_exception.patch: Fix "import of git can cause import
+    failures of unrelated modules due to undefined variable" (Closes: #857171)
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Thu, 09 Mar 2017 11:37:28 +0900
+
+python-git (2.1.1-1) unstable; urgency=medium
+
+  * New upstream version 2.1.1
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Thu, 02 Feb 2017 17:15:45 +0900
+
+python-git (2.1.0-1) unstable; urgency=medium
+
+  * Fresh upstream release (necessary for upcoming release of datalad)
+  * Require smmap and gitdb >= 2
+  * Enable build-time testing back while building NeuroDebian backports
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Wed, 02 Nov 2016 08:13:11 -0400
+
+python-git (2.0.9-1) unstable; urgency=medium
+
+  [ Yaroslav Halchenko ]
+  * debian/TODO to reincarnate testing
+
+  [ TANIGUCHI Takaki ]
+  * New upstream version 2.0.9
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Mon, 17 Oct 2016 19:46:52 +0900
+
+python-git (2.0.8-1) unstable; urgency=medium
+
+  * New upstream version
+  * No custom patches any longer -- absorbed upstream
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 22 Sep 2016 16:09:21 -0400
+
+python-git (2.0.5-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream version.
+  * d/patches/issue470-safe-decode.patch: Added as a proposed fix for
+    upstream issue #470.
+
+ -- Barry Warsaw <barry@debian.org>  Wed, 15 Jun 2016 06:59:02 -0400
+
+python-git (2.0.2-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream version (note: 2.0.2 was not recorded with git-dpm)
+  * debian/control
+    - suggest python-git-doc in python{,3}-git pkgs (Closes: #811922)
+    - added myself to uploaders since did a few already
+    - boosted policy to 3.9.8
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 28 Apr 2016 11:25:09 -0400
+
+python-git (1.0.1+git137-gc8b8379-2.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Add python 3 support (Closes: #774903):
+    - Applied patch from the BTS.
+    - Added --with python3 in debian/rules.
+    - Added override_dh_auto_install to also install in Py3.
+  * Using a separate package for -doc, now using override_dh_sphinxdoc and
+    generating the html docs properly with sphinx-build.
+  * Uncommented rm -rf build in auto_clean to allow double builds.
+  * Bumped compat level to 7 (as lintian is not happy...).
+  * Removed X-Python-Version: >= 2.7 (as even old-stable has 2.7 by default)
+    and removed obsolete debian/pycompat file.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 05 Jan 2016 11:07:29 +0000
+
+python-git (1.0.1+git137-gc8b8379-2) unstable; urgency=medium
+
+  [ SVN-Git Migration ]
+  * Update Vcs fields for git migration
+
+  [ Stefano Rivera ]
+  * git-dpm tag config
+
+  [ TANIGUCHI Takaki ]
+  * debian/watch: Switch to pypy.debian.net.
+  * debian/rules:
+    + remove target override_dh_auto_clean
+    + remove target override_dh_auto_test (Closes: #805535)
+  * debian/copyright: Update Source.
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sun, 29 Nov 2015 17:17:50 +0900
+
+python-git (1.0.1+git137-gc8b8379-1) unstable; urgency=medium
+
+  * Fresh snapshot post upstream release -- mainly bugfixes discovered
+    after release. Upload to unstable (Closes: #790068)
+  * debian/control
+    - X-Python-Version: >= 2.7  to avoid problems on wheezy with 2.6 supported
+      and then needing python-ordereddict
+  * debian/rules
+    - set LC_ALL=C.UTF-8 while running tests
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 17 Aug 2015 17:56:44 -0400
+
+python-git (0.3.6+git28-g88f3dc2-1) experimental; urgency=medium
+
+  * Fresh upstream snapshot with a variety of bugs fixed, e.g.
+    running hooks from cwd which caused problems with annex repos
+    - all up_* patches were adopted upstream, thus dropped here
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Fri, 06 Mar 2015 23:00:41 -0500
+
+python-git (0.3.6+git5-gd8bbfea-1) experimental; urgency=medium
+
+  * New post-release snapshot with some fixes (Closes: #769595)
+    - detects untracked files correctly now (Closes: #739898)
+    - includes debian/patches/dont-choke-on-rc-version.patch
+  * debian/control
+    - bump Standards-Version to 3.9.6
+    - added python-smmap (>= 0.8.3) to Build-Depends and Suggests:
+      used for testing
+    - needs gitdb >= 0.6.4 -- adjusted version in *Depends
+  * debian/rules
+    - enable build-time testing if available on network and capable of
+      cloning original GitPython repository
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 05 Feb 2015 18:44:46 -0500
+
+python-git (0.3.2~RC1-3) unstable; urgency=low
+
+  * Update Homepage to a working URL.
+  * Bump Standards-Version to 3.9.5.
+  * Correctly parses `git --version` when not all components are
+    numeric. Closes: #722481.
+
+ -- Vincent Bernat <bernat@debian.org>  Sat, 02 Nov 2013 01:27:18 +0100
+
+python-git (0.3.2~RC1-2) unstable; urgency=low
+
+  [ Jakub Wilk ]
+  * Use canonical URIs for Vcs-* fields.
+
+  [ TANIGUCHI Takaki ]
+  * debian/control: Change Maintainer to Python Module Team. (Closes: #705279)
+    + Remove "Daniel Watkins <daniel@daniel-watkins.co.uk>" from Maintainer.
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Mon, 13 May 2013 10:10:01 +0900
+
+python-git (0.3.2~RC1-1) unstable; urgency=low
+
+  * Team upload.
+  * New upstream release
+  * Add myself to Uploaders.
+  * Bump Standards-Version to 3.9.3.
+    + debian/copyright: copyright-format 1.0
+  * Add python-gitdb to Depends:.
+
+ -- TANIGUCHI Takaki <takaki@debian.org>  Sun, 08 Apr 2012 21:12:50 +0900
+
+python-git (0.3.1~beta2-1) unstable; urgency=low
+
+  [ Andreas Noteng ]
+  * Team upload.
+  * Update git dependency. (Closes: #600237, #568583)
+  * New upstream release. (Closes: #579553)
+  * Add upstream documentation. (Closes: #523881)
+  * Change source format to 3.0 (quilt)
+  * Bump Standards-Version to 3.9.2
+    - Remove deprecated /usr/share/common-licenses/BSD link from copyright
+  * Change to DEP5 copyright
+
+  [ Vincent Bernat ]
+  * Add myself as uploader
+
+ -- Vincent Bernat <bernat@debian.org>  Thu, 05 May 2011 23:48:19 +0200
+
+python-git (0.1.6-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #512584)
+  * Changed licensing of packaging to match upstream's license.
+
+ -- Daniel Watkins <daniel@daniel-watkins.co.uk>  Sat, 07 Feb 2009 12:10:15 +0100
+
+python-git (0.1.5-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #501211, #507276)
+  * Added Debian Python Modules Team to Uploaders field.
+  * Updated Vcs-* fields to reflect the use of the DPMT Subversion repository.
+  * Removed all patches merged upstream.
+  * Converted debian/rules to use debhelper 7.
+
+ -- Daniel Watkins <daniel@daniel-watkins.co.uk>  Wed, 07 Jan 2009 14:04:00 +0000
+
+python-git (0.1.4.1-2) unstable; urgency=low
+
+  * Fixed the synopsis to work as an appositive clause in a sentence, as per
+    Section 6.2.2 of the Developer Reference.
+  * Added patch so that git.Repo.create and git.Repo.init_bare now create a
+    bare repository, as intended. (Closes: #494581)
+  * Added Vcs-Bzr control field.
+
+ -- Daniel Watkins <daniel@daniel-watkins.co.uk>  Mon, 18 Aug 2008 19:50:22 +0100
+
+python-git (0.1.4.1-1) unstable; urgency=low
+
+  * Initial release. (Closes: #492520)
+
+ -- Daniel Watkins <daniel@daniel-watkins.co.uk>  Sat, 26 Jul 2008 20:48:13 +0100

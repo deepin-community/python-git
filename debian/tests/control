@@ -1,0 +1,3 @@
+Tests: run-test-suite
+Depends: @, git, python3-pytest, ca-certificates, python3-ddt, python3-all
+Restrictions: needs-internet, allow-stderr
