@@ -1,3 +1,17 @@
+python-git (3.1.37-3) unstable; urgency=medium
+
+  * Team upload.
+  * Source-only upload. 
+
+ -- Jérémy Lal <kapouer@melix.org>  Fri, 12 Jan 2024 16:11:11 +0100
+
+python-git (3.1.37-2) unstable; urgency=medium
+
+  * Team upload.
+  * Add pydist for GitPython alias
+
+ -- Jérémy Lal <kapouer@melix.org>  Sat, 06 Jan 2024 19:33:40 +0100
+
 python-git (3.1.37-1) unstable; urgency=medium
 
   * Team upload.
