@@ -1,3 +1,114 @@
+python-git (3.1.44-1+deb13u1) trixie-security; urgency=medium
+
+  * CVE-2026-42215: block unsafe options passed as underscored kwargs
+    (Closes: #1135349).
+  * CVE-2026-42284: check unsafe options after splitting multi_options
+    with shlex (Closes: #1135350).
+  * CVE-2026-44243: prevent access to files outside the repository when
+    manipulating references.
+  * CVE-2026-44244: reject control characters in config values written
+    by the config writer, preventing config injection.
+  * CVE-2026-67322: do not expand environment variables in clone URLs,
+    which could leak secrets to a remote host (Closes: #1143454).
+  * CVE-2026-67323: guard unsafe options (--exec, --upload-pack, ...) in
+    archive, fetch, pull, push, ls-remote, blame and revision APIs.
+  * CVE-2026-67324, CVE-2026-67325: abbreviated long options and joined
+    short options bypassed the unsafe option checks, leading to command
+    execution.
+  * CVE-2026-67326: config section names were not validated before
+    writing, allowing config injection.
+  * CVE-2026-69097: config section names containing an unquoted closing
+    bracket could inject arbitrary settings into .git/config (Closes:
+    #1143602).
+  * CVE-2026-73619: add --add-file, --add-virtual-file (archive) and
+    --bundle-uri (clone) to the unsafe option lists (Closes: #1144344).
+  * CVE-2026-73620: block unsafe options in IndexFile.checkout()
+    (--prefix) and TagReference.create() (-F/--file), which could write
+    to or read from arbitrary filesystem paths.
+  * CVE-2026-73621: reject unsafe output options in Commit.count.
+  * CVE-2026-73622: do not expand environment variables in remote and
+    submodule URLs, which could leak secrets to a remote host.
+  * CVE-2026-73623: reject unsafe --template option when cloning.
+  * CVE-2026-73624: guard unsafe output options in diff operations.
+  * CVE-2026-73625: validate the values of split short options, which
+    could bypass the unsafe option checks in clone, remote, revision,
+    blame and archive operations.
+  * CVE-2026-76217: guard --pathspec-from-file options in IndexFile.remove,
+    Head.checkout and HEAD.reset (Closes: #1144929).
+  * CVE-2026-76218: guard unsafe git init options (--template,
+    --separate-git-dir) in Repo.init.
+  * CVE-2026-76219: guard --index-output in read-tree calls made by
+    from_tree, merge_tree and reset, which could write to an arbitrary
+    path.
+  * CVE-2026-76220: check the value joined to one-character options when
+    split_single_char_options is false, which could bypass the unsafe
+    option checks.
+  * CVE-2026-76221: reject config option names containing characters that
+    could inject arbitrary settings when writing the config.
+  * CVE-2026-76222: validate submodule names read from .gitmodules before
+    filesystem operations, preventing path traversal outside the
+    repository.
+  * CVE-2026-78675: do not process include directives in .gitmodules,
+    which could read arbitrary files.
+  * CVE-2026-78676: preserve multiline config values when writing, which
+    could otherwise inject new options into the config.
+  * CVE-2026-78677: block --separate-git-dir in Repo.clone() and
+    Repo.clone_from(), which could write repository metadata to an
+    arbitrary path.
+  * CVE-2026-78678, CVE-2026-78679: block file-reading options in blame,
+    diff and tag APIs, which could read arbitrary files.
+  * CVE-2026-87817: prefer the .git entry during repository discovery and
+    validate candidate git directories, aligning the behaviour with git.
+  * CVE-2026-87818: treat --no-index as an unsafe diff option, since it
+    allows diffing arbitrary filesystem paths.
+  * CVE-2026-87819: parse actor identities without regular expressions,
+    avoiding quadratic backtracking (ReDoS) on malformed identities.
+  * CVE-2026-100689: reject submodule checkout paths that resolve outside
+    the repository or through a symbolic link, applying to Submodule.update
+    the containment check already used by add and move.
+  * CVE-2026-110855: do not expand environment variables in the
+    separate_git_dir path when cloning, preserving literal paths so
+    repository metadata is not written to an unexpected location
+  * CVE-2026-110856: parse actor identities and dates in commit authors,
+    committers and taggers without backtracking regular expressions,
+    avoiding excessive CPU use (ReDoS) on malformed metadata.
+  * CVE-2026-110857: complete the unsafe option and protocol checks in
+    Git.ls_remote(), Repo.merge_base() and IndexFile.move(), which
+    previously omitted guards already used by sibling APIs.
+  * CVE-2026-110858: reject option-shaped remote names in Remote.update(),
+    which git forwards to "fetch --multiple" without an option terminator,
+    allowing a leading-dash name to change the requested operation.
+  * CVE-2026-110859: validate the positional reference passed by
+    Head.checkout() against the unsafe-option policy, since reference names
+    originating in a cloned repository could otherwise bypass it.
+  * CVE-2026-110860: reject submodule checkout, move and metadata paths that
+    traverse intermediate symbolic links before performing filesystem
+    operations.
+  * CVE-2026-114145: GitPython validates a submodule's '.git' path only
+    after cloning into it (RCE).
+
+ -- Emmanuel Arias <eamanu@debian.org>  Wed, 28 Oct 2026 08:40:08 -0300
+
+python-git (3.1.44-1) unstable; urgency=medium
+
+  * New upstream version 3.1.44
+
+ -- Hans-Christoph Steiner <hans@eds.org>  Wed, 05 Mar 2025 19:51:18 +0100
+
+python-git (3.1.37-3) unstable; urgency=medium
+
+  * Team upload.
+  * Source-only upload. 
+
+ -- Jérémy Lal <kapouer@melix.org>  Fri, 12 Jan 2024 16:11:11 +0100
+
+python-git (3.1.37-2) unstable; urgency=medium
+
+  * Team upload.
+  * Add pydist for GitPython alias
+
+ -- Jérémy Lal <kapouer@melix.org>  Sat, 06 Jan 2024 19:33:40 +0100
+
 python-git (3.1.37-1) unstable; urgency=medium
 
   * Team upload.

@@ -1,18 +1,55 @@
-# exc.py
 # Copyright (C) 2008, 2009 Michael Trier (mtrier@gmail.com) and contributors
 #
-# This module is part of GitPython and is released under
-# the BSD License: https://opensource.org/license/bsd-3-clause/
-""" Module containing all exceptions thrown throughout the git package, """
+# This module is part of GitPython and is released under the
+# 3-Clause BSD License: https://opensource.org/license/bsd-3-clause/
 
-from gitdb.exc import BadName  # NOQA @UnusedWildImport skipcq: PYL-W0401, PYL-W0614
-from gitdb.exc import *  # NOQA @UnusedWildImport skipcq: PYL-W0401, PYL-W0614
+"""Exceptions thrown throughout the git package."""
+
+__all__ = [
+    # Defined in gitdb.exc:
+    "AmbiguousObjectName",
+    "BadName",
+    "BadObject",
+    "BadObjectType",
+    "InvalidDBRoot",
+    "ODBError",
+    "ParseError",
+    "UnsupportedOperation",
+    # Introduced in this module:
+    "GitError",
+    "InvalidGitRepositoryError",
+    "WorkTreeRepositoryUnsupported",
+    "NoSuchPathError",
+    "UnsafeProtocolError",
+    "UnsafeOptionError",
+    "CommandError",
+    "GitCommandNotFound",
+    "GitCommandError",
+    "CheckoutError",
+    "CacheError",
+    "UnmergedEntriesError",
+    "HookExecutionError",
+    "RepositoryDirtyError",
+]
+
+from gitdb.exc import (
+    AmbiguousObjectName,
+    BadName,
+    BadObject,
+    BadObjectType,
+    InvalidDBRoot,
+    ODBError,
+    ParseError,
+    UnsupportedOperation,
+)
+
 from git.compat import safe_decode
 from git.util import remove_password_if_present
 
 # typing ----------------------------------------------------
 
-from typing import List, Sequence, Tuple, Union, TYPE_CHECKING
+from typing import List, Sequence, Tuple, TYPE_CHECKING, Union
+
 from git.types import PathLike
 
 if TYPE_CHECKING:
@@ -22,7 +59,7 @@ if TYPE_CHECKING:
 
 
 class GitError(Exception):
-    """Base class for all package exceptions"""
+    """Base class for all package exceptions."""
 
 
 class InvalidGitRepositoryError(GitError):
@@ -30,7 +67,7 @@ class InvalidGitRepositoryError(GitError):
 
 
 class WorkTreeRepositoryUnsupported(InvalidGitRepositoryError):
-    """Thrown to indicate we can't handle work tree repositories"""
+    """Thrown to indicate we can't handle work tree repositories."""
 
 
 class NoSuchPathError(GitError, OSError):
@@ -46,16 +83,20 @@ class UnsafeOptionError(GitError):
 
 
 class CommandError(GitError):
-    """Base class for exceptions thrown at every stage of `Popen()` execution.
+    """Base class for exceptions thrown at every stage of :class:`~subprocess.Popen`
+    execution.
 
     :param command:
         A non-empty list of argv comprising the command-line.
     """
 
-    #: A unicode print-format with 2 `%s for `<cmdline>` and the rest,
-    #:  e.g.
-    #:     "'%s' failed%s"
     _msg = "Cmd('%s') failed%s"
+    """Format string with 2 ``%s`` for ``<cmdline>`` and the rest.
+
+    For example: ``"'%s' failed%s"``
+
+    Subclasses may override this attribute, provided it is still in this form.
+    """
 
     def __init__(
         self,
@@ -97,11 +138,11 @@ class CommandError(GitError):
 
 
 class GitCommandNotFound(CommandError):
-    """Thrown if we cannot find the `git` executable in the PATH or at the path given by
-    the GIT_PYTHON_GIT_EXECUTABLE environment variable"""
+    """Thrown if we cannot find the ``git`` executable in the :envvar:`PATH` or at the
+    path given by the :envvar:`GIT_PYTHON_GIT_EXECUTABLE` environment variable."""
 
     def __init__(self, command: Union[List[str], Tuple[str], str], cause: Union[str, Exception]) -> None:
-        super(GitCommandNotFound, self).__init__(command, cause)
+        super().__init__(command, cause)
         self._msg = "Cmd('%s') not found%s"
 
 
@@ -115,22 +156,22 @@ class GitCommandError(CommandError):
         stderr: Union[bytes, str, None] = None,
         stdout: Union[bytes, str, None] = None,
     ) -> None:
-        super(GitCommandError, self).__init__(command, status, stderr, stdout)
+        super().__init__(command, status, stderr, stdout)
 
 
 class CheckoutError(GitError):
     """Thrown if a file could not be checked out from the index as it contained
     changes.
 
-    The .failed_files attribute contains a list of relative paths that failed
-    to be checked out as they contained changes that did not exist in the index.
+    The :attr:`failed_files` attribute contains a list of relative paths that failed to
+    be checked out as they contained changes that did not exist in the index.
 
-    The .failed_reasons attribute contains a string informing about the actual
+    The :attr:`failed_reasons` attribute contains a string informing about the actual
     cause of the issue.
 
-    The .valid_files attribute contains a list of relative paths to files that
-    were checked out successfully and hence match the version stored in the
-    index"""
+    The :attr:`valid_files` attribute contains a list of relative paths to files that
+    were checked out successfully and hence match the version stored in the index.
+    """
 
     def __init__(
         self,
@@ -149,18 +190,20 @@ class CheckoutError(GitError):
 
 
 class CacheError(GitError):
-
-    """Base for all errors related to the git index, which is called cache internally"""
+    """Base for all errors related to the git index, which is called "cache"
+    internally."""
 
 
 class UnmergedEntriesError(CacheError):
     """Thrown if an operation cannot proceed as there are still unmerged
-    entries in the cache"""
+    entries in the cache."""
 
 
 class HookExecutionError(CommandError):
-    """Thrown if a hook exits with a non-zero exit code. It provides access to the exit code and the string returned
-    via standard output"""
+    """Thrown if a hook exits with a non-zero exit code.
+
+    This provides access to the exit code and the string returned via standard output.
+    """
 
     def __init__(
         self,
@@ -169,12 +212,13 @@ class HookExecutionError(CommandError):
         stderr: Union[bytes, str, None] = None,
         stdout: Union[bytes, str, None] = None,
     ) -> None:
-        super(HookExecutionError, self).__init__(command, status, stderr, stdout)
+        super().__init__(command, status, stderr, stdout)
         self._msg = "Hook('%s') failed%s"
 
 
 class RepositoryDirtyError(GitError):
-    """Thrown whenever an operation on a repository fails as it has uncommitted changes that would be overwritten"""
+    """Thrown whenever an operation on a repository fails as it has uncommitted changes
+    that would be overwritten."""
 
     def __init__(self, repo: "Repo", message: str) -> None:
         self.repo = repo

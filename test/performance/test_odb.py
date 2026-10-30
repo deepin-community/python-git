@@ -1,8 +1,12 @@
-"""Performance tests for object store"""
+# This module is part of GitPython and is released under the
+# 3-Clause BSD License: https://opensource.org/license/bsd-3-clause/
+
+"""Performance tests for object store."""
+
 import sys
 from time import time
 
-from .lib import TestBigRepoR
+from test.performance.lib import TestBigRepoR
 
 
 class TestObjDBPerformance(TestBigRepoR):
@@ -24,7 +28,7 @@ class TestObjDBPerformance(TestBigRepoR):
             results[0].append(elapsed)
 
             # GET TREES
-            # walk all trees of all commits
+            # Walk all trees of all commits.
             st = time()
             blobs_per_commit = []
             nt = 0
@@ -35,7 +39,7 @@ class TestObjDBPerformance(TestBigRepoR):
                     nt += 1
                     if item.type == "blob":
                         blobs.append(item)
-                    # direct access for speed
+                    # Direct access for speed.
                 # END while trees are there for walking
                 blobs_per_commit.append(blobs)
             # END for each commit
@@ -75,7 +79,7 @@ class TestObjDBPerformance(TestBigRepoR):
             results[2].append(elapsed)
         # END for each repo type
 
-        # final results
+        # Final results.
         for test_name, a, b in results:
             print(
                 "%s: %f s vs %f s, pure is %f times slower" % (test_name, a, b, b / a),
