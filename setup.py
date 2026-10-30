@@ -1,23 +1,24 @@
 #!/usr/bin/env python
 
+import os
+from pathlib import Path
+import sys
 from typing import Sequence
+
 from setuptools import setup, find_packages
 from setuptools.command.build_py import build_py as _build_py
 from setuptools.command.sdist import sdist as _sdist
-import os
-import sys
 
-with open(os.path.join(os.path.dirname(__file__), "VERSION")) as ver_file:
-    VERSION = ver_file.readline().strip()
 
-with open("requirements.txt") as reqs_file:
-    requirements = reqs_file.read().splitlines()
+def _read_content(path: str) -> str:
+    return (Path(__file__).parent / path).read_text(encoding="utf-8")
 
-with open("test-requirements.txt") as reqs_file:
-    test_requirements = reqs_file.read().splitlines()
 
-with open("README.md") as rm_file:
-    long_description = rm_file.read()
+version = _read_content("VERSION").strip()
+requirements = _read_content("requirements.txt").splitlines()
+test_requirements = _read_content("test-requirements.txt").splitlines()
+doc_requirements = _read_content("doc/requirements.txt").splitlines()
+long_description = _read_content("README.md")
 
 
 class build_py(_build_py):
@@ -48,7 +49,7 @@ def _stamp_version(filename: str) -> None:
         with open(filename) as f:
             for line in f:
                 if "__version__ =" in line:
-                    line = line.replace('"git"', "'%s'" % VERSION)
+                    line = line.replace('"git"', "'%s'" % version)
                     found = True
                 out.append(line)
     except OSError:
@@ -64,18 +65,21 @@ def _stamp_version(filename: str) -> None:
 setup(
     name="GitPython",
     cmdclass={"build_py": build_py, "sdist": sdist},
-    version=VERSION,
+    version=version,
     description="GitPython is a Python library used to interact with Git repositories",
     author="Sebastian Thiel, Michael Trier",
     author_email="byronimo@gmail.com, mtrier@gmail.com",
-    license="BSD",
+    license="BSD-3-Clause",
     url="https://github.com/gitpython-developers/GitPython",
     packages=find_packages(exclude=["test", "test.*"]),
     include_package_data=True,
     package_dir={"git": "git"},
     python_requires=">=3.7",
     install_requires=requirements,
-    extras_require={"test": test_requirements},
+    extras_require={
+        "test": test_requirements,
+        "doc": doc_requirements,
+    },
     zip_safe=False,
     long_description=long_description,
     long_description_content_type="text/markdown",

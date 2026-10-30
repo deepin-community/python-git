@@ -2,6 +2,51 @@
 Changelog
 =========
 
+3.1.44
+======
+
+See the following for all changes.
+https://github.com/gitpython-developers/GitPython/releases/tag/3.1.44
+
+3.1.43
+======
+
+A major visible change will be the added deprecation- or user-warnings,
+and greatly improved typing.
+
+See the following for all changes.
+https://github.com/gitpython-developers/GitPython/releases/tag/3.1.43
+
+3.1.42
+======
+
+See the following for all changes.
+https://github.com/gitpython-developers/GitPython/releases/tag/3.1.42
+
+3.1.41
+======
+
+This release is relevant for security as it fixes a possible arbitrary
+code execution on Windows.
+
+See this PR for details: https://github.com/gitpython-developers/GitPython/pull/1792
+An advisory is available soon at: https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-2mqj-m65w-jghx
+
+See the following for all changes.
+https://github.com/gitpython-developers/GitPython/releases/tag/3.1.41
+
+3.1.40
+======
+
+See the following for all changes.
+https://github.com/gitpython-developers/GitPython/releases/tag/3.1.40
+
+3.1.38
+======
+
+See the following for all changes.
+https://github.com/gitpython-developers/GitPython/releases/tag/3.1.38
+
 3.1.37
 ======
 

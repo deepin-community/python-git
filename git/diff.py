@@ -1,17 +1,19 @@
-# diff.py
 # Copyright (C) 2008, 2009 Michael Trier (mtrier@gmail.com) and contributors
 #
-# This module is part of GitPython and is released under
-# the BSD License: https://opensource.org/license/bsd-3-clause/
+# This module is part of GitPython and is released under the
+# 3-Clause BSD License: https://opensource.org/license/bsd-3-clause/
 
+__all__ = ["DiffConstants", "NULL_TREE", "INDEX", "Diffable", "DiffIndex", "Diff"]
+
+import enum
 import re
+import warnings
+
 from git.cmd import handle_process_output
 from git.compat import defenc
+from git.objects.blob import Blob
+from git.objects.util import mode_str_to_int
 from git.util import finalize_process, hex_to_bin
-
-from .objects.blob import Blob
-from .objects.util import mode_str_to_int
-
 
 # typing ------------------------------------------------------------------
 
@@ -22,38 +24,75 @@ from typing import (
     Match,
     Optional,
     Tuple,
-    Type,
+    TYPE_CHECKING,
     TypeVar,
     Union,
-    TYPE_CHECKING,
     cast,
 )
-from git.types import PathLike, Literal
+from git.types import Literal, PathLike
 
 if TYPE_CHECKING:
-    from .objects.tree import Tree
-    from .objects import Commit
-    from git.repo.base import Repo
-    from git.objects.base import IndexObject
     from subprocess import Popen
-    from git import Git
+
+    from git.cmd import Git
+    from git.objects.base import IndexObject
+    from git.objects.commit import Commit
+    from git.objects.tree import Tree
+    from git.repo.base import Repo
 
 Lit_change_type = Literal["A", "D", "C", "M", "R", "T", "U"]
-
-
-# def is_change_type(inp: str) -> TypeGuard[Lit_change_type]:
-#     # return True
-#     return inp in ['A', 'D', 'C', 'M', 'R', 'T', 'U']
 
 # ------------------------------------------------------------------------
 
 
-__all__ = ("Diffable", "DiffIndex", "Diff", "NULL_TREE")
+@enum.unique
+class DiffConstants(enum.Enum):
+    """Special objects for :meth:`Diffable.diff`.
 
-# Special object to compare against the empty tree in diffs
-NULL_TREE = object()
+    See the :meth:`Diffable.diff` method's ``other`` parameter, which accepts various
+    values including these.
 
-_octal_byte_re = re.compile(b"\\\\([0-9]{3})")
+    :note:
+        These constants are also available as attributes of the :mod:`git.diff` module,
+        the :class:`Diffable` class and its subclasses and instances, and the top-level
+        :mod:`git` module.
+    """
+
+    NULL_TREE = enum.auto()
+    """Stand-in indicating you want to compare against the empty tree in diffs.
+
+    Also accessible as :const:`git.NULL_TREE`, :const:`git.diff.NULL_TREE`, and
+    :const:`Diffable.NULL_TREE`.
+    """
+
+    INDEX = enum.auto()
+    """Stand-in indicating you want to diff against the index.
+
+    Also accessible as :const:`git.INDEX`, :const:`git.diff.INDEX`, and
+    :const:`Diffable.INDEX`, as well as :const:`Diffable.Index`. The latter has been
+    kept for backward compatibility and made an alias of this, so it may still be used.
+    """
+
+
+NULL_TREE: Literal[DiffConstants.NULL_TREE] = DiffConstants.NULL_TREE
+"""Stand-in indicating you want to compare against the empty tree in diffs.
+
+See :meth:`Diffable.diff`, which accepts this as a value of its ``other`` parameter.
+
+This is an alias of :const:`DiffConstants.NULL_TREE`, which may also be accessed as
+:const:`git.NULL_TREE` and :const:`Diffable.NULL_TREE`.
+"""
+
+INDEX: Literal[DiffConstants.INDEX] = DiffConstants.INDEX
+"""Stand-in indicating you want to diff against the index.
+
+See :meth:`Diffable.diff`, which accepts this as a value of its ``other`` parameter.
+
+This is an alias of :const:`DiffConstants.INDEX`, which may also be accessed as
+:const:`git.INDEX` and :const:`Diffable.INDEX`, as well as :const:`Diffable.Index`.
+"""
+
+_octal_byte_re = re.compile(rb"\\([0-9]{3})")
 
 
 def _octal_repl(matchobj: Match) -> bytes:
@@ -79,106 +118,152 @@ def decode_path(path: bytes, has_ab_prefix: bool = True) -> Optional[bytes]:
     return path
 
 
-class Diffable(object):
-
-    """Common interface for all object that can be diffed against another object of compatible type.
+class Diffable:
+    """Common interface for all objects that can be diffed against another object of
+    compatible type.
 
     :note:
-        Subclasses require a repo member as it is the case for Object instances, for practical
-        reasons we do not derive from Object."""
+        Subclasses require a :attr:`repo` member, as it is the case for
+        :class:`~git.objects.base.Object` instances. For practical reasons we do not
+        derive from :class:`~git.objects.base.Object`.
+    """
 
     __slots__ = ()
 
-    # standin indicating you want to diff against the index
-    class Index(object):
-        pass
+    repo: "Repo"
+    """Repository to operate on. Must be provided by subclass or sibling class."""
+
+    NULL_TREE = NULL_TREE
+    """Stand-in indicating you want to compare against the empty tree in diffs.
+
+    See the :meth:`diff` method, which accepts this as a value of its ``other``
+    parameter.
+
+    This is the same as :const:`DiffConstants.NULL_TREE`, and may also be accessed as
+    :const:`git.NULL_TREE` and :const:`git.diff.NULL_TREE`.
+    """
+
+    INDEX = INDEX
+    """Stand-in indicating you want to diff against the index.
+
+    See the :meth:`diff` method, which accepts this as a value of its ``other``
+    parameter.
+
+    This is the same as :const:`DiffConstants.INDEX`, and may also be accessed as
+    :const:`git.INDEX` and :const:`git.diff.INDEX`, as well as :class:`Diffable.INDEX`,
+    which is kept for backward compatibility (it is now defined an alias of this).
+    """
+
+    Index = INDEX
+    """Stand-in indicating you want to diff against the index
+    (same as :const:`~Diffable.INDEX`).
+
+    This is an alias of :const:`~Diffable.INDEX`, for backward compatibility. See
+    :const:`~Diffable.INDEX` and :meth:`diff` for details.
+
+    :note:
+        Although always meant for use as an opaque constant, this was formerly defined
+        as a class. Its usage is unchanged, but static type annotations that attempt
+        to permit only this object must be changed to avoid new mypy errors. This was
+        previously not possible to do, though ``Type[Diffable.Index]`` approximated it.
+        It is now possible to do precisely, using ``Literal[DiffConstants.INDEX]``.
+    """
 
     def _process_diff_args(
-        self, args: List[Union[str, "Diffable", Type["Diffable.Index"], object]]
-    ) -> List[Union[str, "Diffable", Type["Diffable.Index"], object]]:
+        self,
+        args: List[Union[PathLike, "Diffable"]],
+    ) -> List[Union[PathLike, "Diffable"]]:
         """
         :return:
-            possibly altered version of the given args list.
-            Method is called right before git command execution.
-            Subclasses can use it to alter the behaviour of the superclass"""
+            Possibly altered version of the given args list.
+            This method is called right before git command execution.
+            Subclasses can use it to alter the behaviour of the superclass.
+        """
         return args
 
     def diff(
         self,
-        other: Union[Type["Index"], "Tree", "Commit", None, str, object] = Index,
+        other: Union[DiffConstants, "Tree", "Commit", str, None] = INDEX,
         paths: Union[PathLike, List[PathLike], Tuple[PathLike, ...], None] = None,
         create_patch: bool = False,
         **kwargs: Any,
-    ) -> "DiffIndex":
-        """Creates diffs between two items being trees, trees and index or an
-        index and the working tree. It will detect renames automatically.
+    ) -> "DiffIndex[Diff]":
+        """Create diffs between two items being trees, trees and index or an index and
+        the working tree. Detects renames automatically.
 
         :param other:
-            Is the item to compare us with.
-            If None, we will be compared to the working tree.
-            If Treeish, it will be compared against the respective tree
-            If Index ( type ), it will be compared against the index.
-            If git.NULL_TREE, it will compare against the empty tree.
-            It defaults to Index to assure the method will not by-default fail
-            on bare repositories.
+            This the item to compare us with.
+
+            * If ``None``, we will be compared to the working tree.
+
+            * If a :class:`~git.types.Tree_ish` or string, it will be compared against
+              the respective tree.
+
+            * If :const:`INDEX`, it will be compared against the index.
+
+            * If :const:`NULL_TREE`, it will compare against the empty tree.
+
+            This parameter defaults to :const:`INDEX` (rather than ``None``) so that the
+            method will not by default fail on bare repositories.
 
         :param paths:
-            is a list of paths or a single path to limit the diff to.
-            It will only include at least one of the given path or paths.
+            This a list of paths or a single path to limit the diff to. It will only
+            include at least one of the given path or paths.
 
         :param create_patch:
-            If True, the returned Diff contains a detailed patch that if applied
-            makes the self to other. Patches are somewhat costly as blobs have to be read
-            and diffed.
+            If ``True``, the returned :class:`Diff` contains a detailed patch that if
+            applied makes the self to other. Patches are somewhat costly as blobs have
+            to be read and diffed.
 
         :param kwargs:
-            Additional arguments passed to git-diff, such as
-            R=True to swap both sides of the diff.
+            Additional arguments passed to :manpage:`git-diff(1)`, such as ``R=True`` to
+            swap both sides of the diff.
 
-        :return: git.DiffIndex
+        :return:
+            A :class:`DiffIndex` representing the computed diff.
 
         :note:
-            On a bare repository, 'other' needs to be provided as Index or as
-            as Tree/Commit, or a git command error will occur"""
-        args: List[Union[PathLike, Diffable, Type["Diffable.Index"], object]] = []
-        args.append("--abbrev=40")  # we need full shas
-        args.append("--full-index")  # get full index paths, not only filenames
+            On a bare repository, `other` needs to be provided as :const:`INDEX`, or as
+            an instance of :class:`~git.objects.tree.Tree` or
+            :class:`~git.objects.commit.Commit`, or a git command error will occur.
+        """
+        args: List[Union[PathLike, Diffable]] = []
+        args.append("--abbrev=40")  # We need full shas.
+        args.append("--full-index")  # Get full index paths, not only filenames.
 
-        # remove default '-M' arg (check for renames) if user is overriding it
+        # Remove default '-M' arg (check for renames) if user is overriding it.
         if not any(x in kwargs for x in ("find_renames", "no_renames", "M")):
             args.append("-M")
 
         if create_patch:
             args.append("-p")
+            args.append("--no-ext-diff")
         else:
             args.append("--raw")
             args.append("-z")
 
-        # in any way, assure we don't see colored output,
-        # fixes https://github.com/gitpython-developers/GitPython/issues/172
+        # Ensure we never see colored output.
+        # Fixes: https://github.com/gitpython-developers/GitPython/issues/172
         args.append("--no-color")
 
         if paths is not None and not isinstance(paths, (tuple, list)):
             paths = [paths]
 
-        if hasattr(self, "Has_Repo"):
-            self.repo: "Repo" = self.repo
-
         diff_cmd = self.repo.git.diff
-        if other is self.Index:
+        if other is INDEX:
             args.insert(0, "--cached")
         elif other is NULL_TREE:
-            args.insert(0, "-r")  # recursive diff-tree
+            args.insert(0, "-r")  # Recursive diff-tree.
             args.insert(0, "--root")
             diff_cmd = self.repo.git.diff_tree
         elif other is not None:
-            args.insert(0, "-r")  # recursive diff-tree
+            args.insert(0, "-r")  # Recursive diff-tree.
             args.insert(0, other)
             diff_cmd = self.repo.git.diff_tree
 
         args.insert(0, self)
 
-        # paths is list here or None
+        # paths is a list or tuple here, or None.
         if paths:
             args.append("--")
             args.extend(paths)
@@ -198,27 +283,29 @@ T_Diff = TypeVar("T_Diff", bound="Diff")
 
 
 class DiffIndex(List[T_Diff]):
+    R"""An index for diffs, allowing a list of :class:`Diff`\s to be queried by the diff
+    properties.
 
-    """Implements an Index for diffs, allowing a list of Diffs to be queried by
-    the diff properties.
+    The class improves the diff handling convenience.
+    """
 
-    The class improves the diff handling convenience"""
-
-    # change type invariant identifying possible ways a blob can have changed
-    # A = Added
-    # D = Deleted
-    # R = Renamed
-    # M = Modified
-    # T = Changed in the type
     change_type = ("A", "C", "D", "R", "M", "T")
+    """Change type invariant identifying possible ways a blob can have changed:
+
+    * ``A`` = Added
+    * ``D`` = Deleted
+    * ``R`` = Renamed
+    * ``M`` = Modified
+    * ``T`` = Changed in the type
+    """
 
     def iter_change_type(self, change_type: Lit_change_type) -> Iterator[T_Diff]:
         """
         :return:
-            iterator yielding Diff instances that match the given change_type
+            Iterator yielding :class:`Diff` instances that match the given `change_type`
 
         :param change_type:
-            Member of DiffIndex.change_type, namely:
+            Member of :attr:`DiffIndex.change_type`, namely:
 
             * 'A' for added paths
             * 'D' for deleted paths
@@ -238,46 +325,47 @@ class DiffIndex(List[T_Diff]):
                 yield diffidx
             elif change_type == "C" and diffidx.copied_file:
                 yield diffidx
-            elif change_type == "R" and diffidx.renamed:
+            elif change_type == "R" and diffidx.renamed_file:
                 yield diffidx
             elif change_type == "M" and diffidx.a_blob and diffidx.b_blob and diffidx.a_blob != diffidx.b_blob:
                 yield diffidx
         # END for each diff
 
 
-class Diff(object):
-
+class Diff:
     """A Diff contains diff information between two Trees.
 
-    It contains two sides a and b of the diff, members are prefixed with
-    "a" and "b" respectively to inidcate that.
+    It contains two sides a and b of the diff. Members are prefixed with "a" and "b"
+    respectively to indicate that.
 
     Diffs keep information about the changed blob objects, the file mode, renames,
     deletions and new files.
 
-    There are a few cases where None has to be expected as member variable value:
+    There are a few cases where ``None`` has to be expected as member variable value:
 
-    ``New File``::
+    New File::
 
         a_mode is None
         a_blob is None
         a_path is None
 
-    ``Deleted File``::
+    Deleted File::
 
         b_mode is None
         b_blob is None
         b_path is None
 
-    ``Working Tree Blobs``
+    Working Tree Blobs:
 
         When comparing to working trees, the working tree blob will have a null hexsha
-        as a corresponding object does not yet exist. The mode will be null as well.
-        But the path will be available though.
-        If it is listed in a diff the working tree version of the file must
-        be different to the version in the index or tree, and hence has been modified."""
+        as a corresponding object does not yet exist. The mode will be null as well. The
+        path will be available, though.
 
-    # precompiled regex
+        If it is listed in a diff, the working tree version of the file must differ from
+        the version in the index or tree, and hence has been modified.
+    """
+
+    # Precompiled regex.
     re_header = re.compile(
         rb"""
                                 ^diff[ ]--git
@@ -299,7 +387,8 @@ class Diff(object):
                             """,
         re.VERBOSE | re.MULTILINE,
     )
-    # can be used for comparisons
+
+    # These can be used for comparisons.
     NULL_HEX_SHA = "0" * 40
     NULL_BIN_SHA = b"\0" * 20
 
@@ -346,8 +435,8 @@ class Diff(object):
         self.a_mode = mode_str_to_int(a_mode) if a_mode else None
         self.b_mode = mode_str_to_int(b_mode) if b_mode else None
 
-        # Determine whether this diff references a submodule, if it does then
-        # we need to overwrite "repo" to the corresponding submodule's repo instead
+        # Determine whether this diff references a submodule. If it does then
+        # we need to overwrite "repo" to the corresponding submodule's repo instead.
         if repo and a_rawpath:
             for submodule in repo.submodules:
                 if submodule.path == a_rawpath.decode(defenc, "replace"):
@@ -371,7 +460,7 @@ class Diff(object):
         self.deleted_file: bool = deleted_file
         self.copied_file: bool = copied_file
 
-        # be clear and use None instead of empty strings
+        # Be clear and use None instead of empty strings.
         assert raw_rename_from is None or isinstance(raw_rename_from, bytes)
         assert raw_rename_to is None or isinstance(raw_rename_to, bytes)
         self.raw_rename_from = raw_rename_from or None
@@ -395,15 +484,15 @@ class Diff(object):
         return hash(tuple(getattr(self, n) for n in self.__slots__))
 
     def __str__(self) -> str:
-        h: str = "%s"
+        h = "%s"
         if self.a_blob:
             h %= self.a_blob.path
         elif self.b_blob:
             h %= self.b_blob.path
 
-        msg: str = ""
-        line = None  # temp line
-        line_length = 0  # line length
+        msg = ""
+        line = None
+        line_length = 0
         for b, n in zip((self.a_blob, self.b_blob), ("lhs", "rhs")):
             if b:
                 line = "\n%s: %o | %s" % (n, b.mode, b.hexsha)
@@ -414,7 +503,7 @@ class Diff(object):
             msg += line
         # END for each blob
 
-        # add headline
+        # Add headline.
         h += "\n" + "=" * line_length
 
         if self.deleted_file:
@@ -433,15 +522,11 @@ class Diff(object):
                 msg += self.diff.decode(defenc) if isinstance(self.diff, bytes) else self.diff
             except UnicodeDecodeError:
                 msg += "OMITTED BINARY DATA"
-            # end handle encoding
+            # END handle encoding
             msg += "\n---"
         # END diff info
 
-        # Python2 silliness: have to assure we convert our likely to be unicode object to a string with the
-        # right encoding. Otherwise it tries to convert it using ascii, which may fail ungracefully
-        res = h + msg
-        # end
-        return res
+        return h + msg
 
     @property
     def a_path(self) -> Optional[str]:
@@ -461,14 +546,25 @@ class Diff(object):
 
     @property
     def renamed(self) -> bool:
-        """:returns: True if the blob of our diff has been renamed
-        :note: This property is deprecated, please use ``renamed_file`` instead.
+        """Deprecated, use :attr:`renamed_file` instead.
+
+        :return:
+            ``True`` if the blob of our diff has been renamed
+
+        :note:
+            This property is deprecated.
+            Please use the :attr:`renamed_file` property instead.
         """
+        warnings.warn(
+            "Diff.renamed is deprecated, use Diff.renamed_file instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.renamed_file
 
     @property
     def renamed_file(self) -> bool:
-        """:returns: True if the blob of our diff has been renamed"""
+        """:return: ``True`` if the blob of our diff has been renamed"""
         return self.rename_from != self.rename_to
 
     @classmethod
@@ -485,23 +581,32 @@ class Diff(object):
         return None
 
     @classmethod
-    def _index_from_patch_format(cls, repo: "Repo", proc: Union["Popen", "Git.AutoInterrupt"]) -> DiffIndex:
-        """Create a new DiffIndex from the given text which must be in patch format
-        :param repo: is the repository we are operating on - it is required
-        :param stream: result of 'git diff' as a stream (supporting file protocol)
-        :return: git.DiffIndex"""
+    def _index_from_patch_format(cls, repo: "Repo", proc: Union["Popen", "Git.AutoInterrupt"]) -> DiffIndex["Diff"]:
+        """Create a new :class:`DiffIndex` from the given process output which must be
+        in patch format.
 
-        ## FIXME: Here SLURPING raw, need to re-phrase header-regexes linewise.
+        :param repo:
+            The repository we are operating on.
+
+        :param proc:
+            :manpage:`git-diff(1)` process to read from
+            (supports :class:`Git.AutoInterrupt <git.cmd.Git.AutoInterrupt>` wrapper).
+
+        :return:
+            :class:`DiffIndex`
+        """
+
+        # FIXME: Here SLURPING raw, need to re-phrase header-regexes linewise.
         text_list: List[bytes] = []
         handle_process_output(proc, text_list.append, None, finalize_process, decode_streams=False)
 
-        # for now, we have to bake the stream
+        # For now, we have to bake the stream.
         text = b"".join(text_list)
         index: "DiffIndex" = DiffIndex()
         previous_header: Union[Match[bytes], None] = None
         header: Union[Match[bytes], None] = None
-        a_path, b_path = None, None  # for mypy
-        a_mode, b_mode = None, None  # for mypy
+        a_path, b_path = None, None  # For mypy.
+        a_mode, b_mode = None, None  # For mypy.
         for _header in cls.re_header.finditer(text):
             (
                 a_path_fallback,
@@ -529,14 +634,14 @@ class Diff(object):
             a_path = cls._pick_best_path(a_path, rename_from, a_path_fallback)
             b_path = cls._pick_best_path(b_path, rename_to, b_path_fallback)
 
-            # Our only means to find the actual text is to see what has not been matched by our regex,
-            # and then retro-actively assign it to our index
+            # Our only means to find the actual text is to see what has not been matched
+            # by our regex, and then retro-actively assign it to our index.
             if previous_header is not None:
                 index[-1].diff = text[previous_header.end() : _header.start()]
-            # end assign actual diff
+            # END assign actual diff
 
-            # Make sure the mode is set if the path is set. Otherwise the resulting blob is invalid
-            # We just use the one mode we should have parsed
+            # Make sure the mode is set if the path is set. Otherwise the resulting blob
+            # is invalid. We just use the one mode we should have parsed.
             a_mode = old_mode or deleted_file_mode or (a_path and (b_mode or new_mode or new_file_mode))
             b_mode = b_mode or new_mode or new_file_mode or (b_path and a_mode)
             index.append(
@@ -561,15 +666,15 @@ class Diff(object):
 
             previous_header = _header
             header = _header
-        # end for each header we parse
+        # END for each header we parse
         if index and header:
             index[-1].diff = text[header.end() :]
-        # end assign last diff
+        # END assign last diff
 
         return index
 
     @staticmethod
-    def _handle_diff_line(lines_bytes: bytes, repo: "Repo", index: DiffIndex) -> None:
+    def _handle_diff_line(lines_bytes: bytes, repo: "Repo", index: DiffIndex["Diff"]) -> None:
         lines = lines_bytes.decode(defenc)
 
         # Discard everything before the first colon, and the colon itself.
@@ -577,7 +682,7 @@ class Diff(object):
 
         for line in lines.split("\x00:"):
             if not line:
-                # The line data is empty, skip
+                # The line data is empty, skip.
                 continue
             meta, _, path = line.partition("\x00")
             path = path.rstrip("\x00")
@@ -587,11 +692,10 @@ class Diff(object):
             # Change type can be R100
             # R: status letter
             # 100: score (in case of copy and rename)
-            # assert is_change_type(_change_type[0]), f"Unexpected value for change_type received: {_change_type[0]}"
             change_type: Lit_change_type = cast(Lit_change_type, _change_type[0])
             score_str = "".join(_change_type[1:])
             score = int(score_str) if score_str.isdigit() else None
-            path = path.strip()
+            path = path.strip("\n")
             a_path = path.encode(defenc)
             b_path = path.encode(defenc)
             deleted_file = False
@@ -600,8 +704,8 @@ class Diff(object):
             rename_from = None
             rename_to = None
 
-            # NOTE: We cannot conclude from the existence of a blob to change type
-            # as diffs with the working do not have blobs yet
+            # NOTE: We cannot conclude from the existence of a blob to change type,
+            # as diffs with the working do not have blobs yet.
             if change_type == "D":
                 b_blob_id = None  # Optional[str]
                 deleted_file = True
@@ -619,7 +723,7 @@ class Diff(object):
                 b_path = b_path_str.encode(defenc)
                 rename_from, rename_to = a_path, b_path
             elif change_type == "T":
-                # Nothing to do
+                # Nothing to do.
                 pass
             # END add/remove handling
 
@@ -643,9 +747,19 @@ class Diff(object):
             index.append(diff)
 
     @classmethod
-    def _index_from_raw_format(cls, repo: "Repo", proc: "Popen") -> "DiffIndex":
-        """Create a new DiffIndex from the given stream which must be in raw format.
-        :return: git.DiffIndex"""
+    def _index_from_raw_format(cls, repo: "Repo", proc: "Popen") -> "DiffIndex[Diff]":
+        """Create a new :class:`DiffIndex` from the given process output which must be
+        in raw format.
+
+        :param repo:
+            The repository we are operating on.
+
+        :param proc:
+            Process to read output from.
+
+        :return:
+            :class:`DiffIndex`
+        """
         # handles
         # :100644 100644 687099101... 37c5e30c8... M    .gitignore
 

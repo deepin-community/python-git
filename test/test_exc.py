@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-# test_exc.py
 # Copyright (C) 2008, 2009, 2016 Michael Trier (mtrier@gmail.com) and contributors
 #
-# This module is part of GitPython and is released under
-# the BSD License: https://opensource.org/license/bsd-3-clause/
+# This module is part of GitPython and is released under the
+# 3-Clause BSD License: https://opensource.org/license/bsd-3-clause/
 
-
+from itertools import product
 import re
 
 import ddt
+
 from git.exc import (
     InvalidGitRepositoryError,
     WorkTreeRepositoryUnsupported,
@@ -23,9 +22,8 @@ from git.exc import (
     RepositoryDirtyError,
 )
 from git.util import remove_password_if_present
-from test.lib import TestBase
 
-import itertools as itt
+from test.lib import TestBase
 
 
 _cmd_argvs = (
@@ -43,18 +41,18 @@ _cmd_argvs = (
     ),
 )
 _causes_n_substrings = (
-    (None, None),  # noqa: E241 @IgnorePep8
-    (7, "exit code(7)"),  # noqa: E241 @IgnorePep8
-    ("Some string", "'Some string'"),  # noqa: E241 @IgnorePep8
-    ("παλιο string", "'παλιο string'"),  # noqa: E241 @IgnorePep8
-    (Exception("An exc."), "Exception('An exc.')"),  # noqa: E241 @IgnorePep8
-    (Exception("Κακια exc."), "Exception('Κακια exc.')"),  # noqa: E241 @IgnorePep8
-    (object(), "<object object at "),  # noqa: E241 @IgnorePep8
+    (None, None),
+    (7, "exit code(7)"),
+    ("Some string", "'Some string'"),
+    ("παλιο string", "'παλιο string'"),
+    (Exception("An exc."), "Exception('An exc.')"),
+    (Exception("Κακια exc."), "Exception('Κακια exc.')"),
+    (object(), "<object object at "),
 )
 
 _streams_n_substrings = (
     None,
-    "steram",
+    "stream",
     "ομορφο stream",
 )
 
@@ -82,7 +80,7 @@ class TExc(TestBase):
         for ex_class in exception_classes:
             self.assertTrue(issubclass(ex_class, GitError))
 
-    @ddt.data(*list(itt.product(_cmd_argvs, _causes_n_substrings, _streams_n_substrings)))
+    @ddt.data(*list(product(_cmd_argvs, _causes_n_substrings, _streams_n_substrings)))
     def test_CommandError_unicode(self, case):
         argv, (cause, subs), stream = case
         cls = CommandError
@@ -102,7 +100,7 @@ class TExc(TestBase):
 
             if subs is not None:
                 # Substrings (must) already contain opening `'`.
-                subs = "(?<!')%s(?!')" % re.escape(subs)
+                subs = r"(?<!')%s(?!')" % re.escape(subs)
                 self.assertRegex(s, subs)
 
         if not stream:
